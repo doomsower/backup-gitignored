@@ -23,6 +23,19 @@ Options:
   -h, --help                      display help for command
 ```
 
+Example of `.backupignore` file:
+
+```
+**/*.generated.*
+**/__generated__
+**/node_modules
+**/Pods/
+**/dist/
+**/build/
+**/.DS_Store
+**/*.log
+```
+
 ## License
 
 MIT
