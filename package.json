@@ -1,0 +1,66 @@
+{
+  "name": "backup-gitignored",
+  "version": "1.0.0",
+  "description": "Small utility to backup .gitignored files",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "files": [
+    "dist/*"
+  ],
+  "bin": {
+    "backup-gitignored": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doomsower/backup-gitignored.git"
+  },
+  "keywords": [
+    "backup",
+    "ignore",
+    "git",
+    "gitignore",
+    "secrets"
+  ],
+  "author": "Konstantin Kuznetsov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/doomsower/backup-gitignored/issues"
+  },
+  "homepage": "https://github.com/doomsower/backup-gitignored#readme",
+  "scripts": {
+    "clean": "rimraf dist/*",
+    "build": "tsc",
+    "prepublishOnly": "yarn lint && yarn build",
+    "lint": "eslint src/*",
+    "semantic-release": "semantic-release",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.1.0",
+    "ignore": "^5.1.8",
+    "jszip": "^3.7.1",
+    "simple-git": "^2.45.0"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^13.1.0",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@types/node": "^16.7.6",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "commitlint": "^13.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-alloy": "^4.2.0",
+    "husky": "^7.0.2",
+    "prettier": "^2.3.2",
+    "pretty-quick": "^3.1.1",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^17.4.6",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.2"
+  },
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "es2020",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "outDir": "./dist",
+
+    "noEmitOnError": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "lib": ["esnext"],
+    "alwaysStrict": false,
+    "strict": true,
+    "pretty": true
+  }
+}
