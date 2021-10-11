@@ -15,5 +15,6 @@
     "strict": true,
     "useUnknownInCatchVariables": false,
     "pretty": true
-  }
+  },
+  "include": ["src"]
 }
