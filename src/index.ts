@@ -13,6 +13,13 @@ import simpleGit from 'simple-git';
 const program = new Command();
 const git = simpleGit();
 
+interface ProgramOptions {
+  output: string;
+  ignoreFile: string;
+  verbose?: boolean;
+  dryRun?: boolean;
+}
+
 async function writeZip(filename: string, zip: JSZip): Promise<string> {
   const zipFile = filename.endsWith('.zip') ? filename : `${filename}.zip`;
   return new Promise((resolve, reject) => {
@@ -35,19 +42,23 @@ async function writeZip(filename: string, zip: JSZip): Promise<string> {
 async function addToZip(
   path: string,
   zip: JSZip,
-  verbose?: boolean,
+  options: ProgramOptions,
 ): Promise<void> {
+  const { verbose, dryRun } = options;
   const stats = await stat(path);
   if (stats.isDirectory()) {
     const contents = await readdir(path);
     for (const inner of contents) {
-      await addToZip(join(path, inner), zip, verbose);
+      await addToZip(join(path, inner), zip, options);
     }
   } else {
-    const buf = await readFile(path);
-    zip.file(path, buf, { binary: true, createFolders: true });
-    if (verbose) {
-      console.info(`Added ${chalk.green(path)}`);
+    if (!dryRun) {
+      const buf = await readFile(path);
+      zip.file(path, buf, { binary: true, createFolders: true });
+    }
+    if (verbose || dryRun) {
+      const prefix = dryRun ? 'Will add' : 'Added';
+      console.info(`${prefix} ${chalk.green(path)}`);
     }
   }
 }
@@ -56,24 +67,20 @@ async function filterIgnored(
   ignoreFile: string,
   paths: string[],
 ): Promise<string[]> {
+  const ig = ignore();
   try {
-    const ig = ignore();
     const ignoreList = await readFile(ignoreFile, { encoding: 'utf-8' });
     ig.add(ignoreList);
-    return ig.filter(paths);
-  } catch {
-    return paths;
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      console.error(e);
+    }
   }
-}
-
-interface ProgramOptions {
-  output: string;
-  ignoreFile: string;
-  verbose?: boolean;
+  return ig.filter(paths);
 }
 
 program
-.description('Small utility to back up .gitignored files')
+  .description('Small utility to back up .gitignored files')
   .argument(
     '[directory]',
     'Directory to get ignored files from, defaults to process.cwd()',
@@ -88,6 +95,7 @@ program
     'File that contains minimatch patterns for files that should be ignored and not included in the backup. Put things like node_modules/ and dist/ here',
     '.backupignore',
   )
+  .option('-d, --dry-run', 'Does not create the actual archive')
   .action(async (directory: string | undefined, options: ProgramOptions) => {
     const dir = directory ?? process.cwd();
 
@@ -102,15 +110,17 @@ program
     const content = await filterIgnored(options.ignoreFile, clean.paths);
     const zip = new JSZip();
     for (const path of content) {
-      await addToZip(path, zip, options.verbose);
+      await addToZip(path, zip, options);
     }
-    try {
-      const zipFile = await writeZip(options.output, zip);
-      if (options.verbose) {
-        console.info(`\nCreated ${chalk.blue(zipFile)}`);
+    if (!options.dryRun) {
+      try {
+        const zipFile = await writeZip(options.output, zip);
+        if (options.verbose) {
+          console.info(`\nCreated ${chalk.blue(zipFile)}`);
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
     }
   });
 

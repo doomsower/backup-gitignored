@@ -4,7 +4,6 @@
     "moduleResolution": "node",
     "target": "es2020",
     "outDir": "./dist",
-
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -14,6 +13,7 @@
     "lib": ["esnext"],
     "alwaysStrict": false,
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "pretty": true
   }
 }
