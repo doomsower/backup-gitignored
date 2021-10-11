@@ -4,14 +4,20 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import ignore from 'ignore';
 import JSZip from 'jszip';
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, readFileSync } from 'node:fs';
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { join, resolve as pathResolve } from 'node:path';
+import { join, resolve as pathResolve, dirname } from 'node:path';
+import { URL } from 'node:url';
 import type { CleanOptions } from 'simple-git';
 import simpleGit from 'simple-git';
 
 const program = new Command();
 const git = simpleGit();
+
+const __dirname = dirname(new URL(import.meta.url).pathname);
+const VERSION = JSON.parse(
+  readFileSync(pathResolve(__dirname, '../package.json'), 'utf8'),
+).version;
 
 interface ProgramOptions {
   output: string;
@@ -81,6 +87,7 @@ async function filterIgnored(
 
 program
   .description('Small utility to back up .gitignored files')
+  .version(VERSION)
   .argument(
     '[directory]',
     'Directory to get ignored files from, defaults to process.cwd()',
